@@ -6,7 +6,7 @@ npm install
 
 - In this directory create a .env file to use the connection with the DB server
 
-\*\*\* exmaple
+*** exmaple
 
 ```
 MONG_URI=#################
