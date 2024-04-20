@@ -1,49 +1,130 @@
-#include <Arduino.h>
-#include "ESP32QRCodeReader.h"
+#include <WiFi.h>
+#include <WiFiUdp.h>
+#include <ArduinoJson.h>
+#include <cmath>
+#include <SD.h> // Include the SD library
+#include <FS.h>
 
-ESP32QRCodeReader reader(CAMERA_MODEL_AI_THINKER);
+#ifndef DEVICE_ID
+#define DEVICE_ID 1
+#endif
 
-void onQrCodeTask(void *pvParameters)
-{
-  struct QRCodeData qrCodeData;
+#ifndef SERVER_IP1
+#define SERVER_IP1 192
+#endif
 
-  while (true)
-  {
-    if (reader.receiveQrCode(&qrCodeData, 100))
-    {
-      Serial.println("Found QRCode");
-      if (qrCodeData.valid)
-      {
-        Serial.print("Payload: ");
-        Serial.println((const char *)qrCodeData.payload);
-      }
-      else
-      {
-        Serial.print("Invalid: ");
-        Serial.println((const char *)qrCodeData.payload);
-      }
-    }
-    vTaskDelay(100 / portTICK_PERIOD_MS);
-  }
-}
+#ifndef SERVER_IP2
+#define SERVER_IP2 168
+#endif
 
+#ifndef SERVER_IP3
+#define SERVER_IP3 1
+#endif
+
+#ifndef SERVER_IP4
+#define SERVER_IP4 8
+#endif
+
+#ifndef SERVER_PORT1
+#define SERVER_PORT1 5040
+#endif
+
+#ifndef SERVER_PORT2
+#define SERVER_PORT2 5030
+#endif
+
+// Global variable declaration
+const int CS_PIN = 5;
+const int deviceId = DEVICE_ID;
+IPAddress serverIP(SERVER_IP1, SERVER_IP2, SERVER_IP3, SERVER_IP4);
+unsigned int serverPort = SERVER_PORT1;
+unsigned int serverPortTCP = SERVER_PORT2;
+unsigned int localUdpPort = 5333;
+String ssid;
+String pass;
+
+WiFiUDP Udp;
+WiFiClient client;
+File file;
+
+/////////////////////////////////////
 void setup()
 {
   Serial.begin(115200);
-  Serial.println();
+  initializeSDCard(CS_PIN);
+  connectToWiFi();
 
-  reader.setup();
-
-  Serial.println("Setup QRCode Reader");
-
-  reader.beginOnCore(1);
-
-  Serial.println("Begin on Core 1");
-
-  xTaskCreate(onQrCodeTask, "onQrCode", 4 * 1024, NULL, 4, NULL);
+  startUDP();
 }
 
 void loop()
 {
-  delay(100);
+  sendJsonData();
+  delay(1500);
+}
+//////////////////////////////////
+
+
+void connectToWiFi() {
+  WiFi.mode(WIFI_STA);
+
+  // Open the .env file in read mode
+  file = SD.open("/.env", FILE_READ);
+  if (!file) {
+    Serial.println("Error opening .env file for reading");
+    return;
+  }
+
+  // Parse the JSON configuration file
+  StaticJsonDocument<200> doc;
+  DeserializationError error = deserializeJson(doc, file);
+  if (error) {
+    Serial.println("Failed to read file, using default configuration");
+  }
+
+  // Get the SSID and password from the configuration file
+  const char* ssid = doc["ssid"];
+  const char* pass = doc["pass"];
+
+  // Close the file
+  file.close();
+
+  WiFi.begin(ssid, pass);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("Connecting...");
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Connected to WiFi");
+  } else {
+    Serial.println("Failed to connect to WiFi");
+  }
+}
+
+void startUDP()
+{
+  Udp.begin(localUdpPort);
+  Serial.println("UDP server started at port: " + String(localUdpPort));
+}
+
+void initializeSDCard(const int CS_PIN)
+{
+  if (!SD.begin(CS_PIN))
+  {
+    return;
+  }
+}
+
+void sendJsonData()
+{
+  StaticJsonDocument<80> doc;
+  // Add data to the JSON object
+  doc["Message"] = "Hello, BRO";
+  Serial.println("Sending JSON data");
+  // Send the JSON string over UDP
+  Udp.beginPacket(serverIP, serverPort);
+  ArduinoJson::serializeJson(doc, Udp); // Send the combined JSON
+  Udp.endPacket();
 }
