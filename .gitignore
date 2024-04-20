@@ -131,3 +131,6 @@ dist
 
 # Next.js server for testing
 nextserver/
+
+# vscode conf files
+.vscode/
