@@ -44,7 +44,7 @@ String ssid;
 String pass;
 
 WiFiUDP Udp;
-WiFiClient client;
+// WiFiClient client;
 File file;
 
 /////////////////////////////////////

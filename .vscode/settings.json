@@ -13,6 +13,7 @@
         "initializer_list": "cpp",
         "span": "cpp",
         "regex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "*.tcc": "cpp"
     }
 }
