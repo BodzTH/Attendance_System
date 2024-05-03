@@ -1,10 +1,10 @@
 const net = require("net");
 const mongoose = require("mongoose");
 require("dotenv").config();
-const crypto = require("crypto");
+const CryptoJS = require("crypto-js");
 const readline = require("readline");
 
-
+const key = CryptoJS.enc.Hex.parse("000102030405060708090a0b0c0d0e0f");
 const tcpServer = net.createServer();
 const IP = process.env.IP;
 const TCP_PORT = process.env.PORTTCP;
@@ -19,9 +19,29 @@ tcpServer.once("connection", (socket) => {
   const rl = readline.createInterface({ input: socket });
 
   rl.on("line", (line) => {
-    const message = JSON.parse(line);
-    console.log(`Received data: ${JSON.stringify(message)}`);
+    console.log(`Received data: ${line}`);
+
+    const encryptedData = CryptoJS.enc.Hex.parse(line);
+
+    try {
+      const decrypted = CryptoJS.AES.decrypt(
+        { ciphertext: encryptedData },
+        key,
+        { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.NoPadding } // Use ECB mode and no padding
+      );
+
+      let decryptedMessage = decrypted.toString(CryptoJS.enc.Hex);
+      let str = "";
+      for (let i = 0; i < decryptedMessage.length; i += 2) {
+        let v = parseInt(decryptedMessage.substr(i, 2), 16);
+        if (v) str += String.fromCharCode(v);
+      }
+      console.log("Decrypted message:", str);
+    } catch (err) {
+      console.error(`Decryption error: ${err.message}`);
+    }
   });
+
   socket.on("end", () => {
     console.log("Client disconnected");
   });
