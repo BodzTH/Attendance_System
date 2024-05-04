@@ -4,7 +4,7 @@ require("dotenv").config();
 const CryptoJS = require("crypto-js");
 const readline = require("readline");
 
-const key = CryptoJS.enc.Hex.parse("000102030405060708090a0b0c0d0e0f");
+const key = CryptoJS.enc.Hex.parse(process.env.KEY);
 const tcpServer = net.createServer();
 const IP = process.env.IP;
 const TCP_PORT = process.env.PORTTCP;
@@ -20,8 +20,11 @@ tcpServer.once("connection", (socket) => {
 
   rl.on("line", (line) => {
     console.log(`Received data: ${line}`);
-
-    const encryptedData = CryptoJS.enc.Hex.parse(line);
+    hash = line.slice(0, 64);
+    cypher = line.slice(64, line.length);
+    console.log(`Hash: ${hash}`);
+    console.log(`Cypher: ${cypher}`);
+    const encryptedData = CryptoJS.enc.Hex.parse(cypher);
 
     try {
       const decrypted = CryptoJS.AES.decrypt(
@@ -33,10 +36,18 @@ tcpServer.once("connection", (socket) => {
       let decryptedMessage = decrypted.toString(CryptoJS.enc.Hex);
       let str = "";
       for (let i = 0; i < decryptedMessage.length; i += 2) {
-        let v = parseInt(decryptedMessage.substr(i, 2), 16);
+        let v = parseInt(decryptedMessage.slice(i, i + 2), 16);
         if (v) str += String.fromCharCode(v);
       }
       console.log("Decrypted message:", str);
+      const hashedMessage = CryptoJS.SHA256(str).toString();
+      console.log("Hashed message:", hashedMessage);
+
+      if (hashedMessage.toUpperCase() === hash) {
+        console.log("Hashes match!");
+      } else {
+        console.log("Hashes do not match!");
+      }
     } catch (err) {
       console.error(`Decryption error: ${err.message}`);
     }
