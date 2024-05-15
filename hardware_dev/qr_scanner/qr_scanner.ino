@@ -1,4 +1,5 @@
 #include "ESP32QRCodeReader.h"
+#include <Arduino.h>
 #include <AES.h>
 #include <SHA256.h>
 #include <WiFi.h>
@@ -57,10 +58,10 @@ IPAddress serverIP(SERVER_IP1, SERVER_IP2, SERVER_IP3, SERVER_IP4);
 String ssid;
 String pass;
 byte key[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
-byte plaintext[512];
-byte cypher[512];
-byte decryptedtext[512];
-byte hash[HASH_LENGTH];
+byte plaintext[128]= {0};
+byte cypher[128] ={0};
+byte decryptedtext[128] ={0};
+byte hash[HASH_LENGTH] ={0};
 
 // Object instances
 WiFiClient client;
@@ -69,38 +70,7 @@ AES128 aes128;
 SHA256 sha256;
 ESP32QRCodeReader reader(CAMERA_MODEL_AI_THINKER);
 
-/////////////////////////////////////
-void setup()
-{
-  Serial.begin(115200);
 
-  ledcSetup(CHANNEL, FREQUENCY, RESOLUTION);
-  ledcAttachPin(FLASH_PIN, CHANNEL);
-  ledcWrite(CHANNEL, 10); // 0-255
-
-  aes128.setKey(key, 16);
-
-  initializeSDCard();
-
-  connectToWiFi();
-  startTCP();
-
-  reader.setup();
-
-  // reader.setDebug(true); // Uncomment this line to enable debugging
-  Serial.println("Setup QRCode Reader");
-
-  reader.beginOnCore(0);
-  Serial.println("Begin on Core 1");
-
-  xTaskCreate(onQrCodeTask, "onQrCode", 4 * 1024, NULL, 4, NULL);
-}
-
-void loop()
-{
-  delay(1000);
-}
-//////////////////////////////////
 
 void connectToWiFi()
 {
@@ -257,6 +227,7 @@ void sendPayload(const char *payload)
   {
     Serial.write(decryptedtext[i]);
   }
+  Serial.println();
   byte *hash = computeHash(payload);
 
   String hashStr = "";
@@ -290,3 +261,37 @@ byte *computeHash(const char *message)
 
   return hash;
 }
+
+
+/////////////////////////////////////
+void setup()
+{
+  Serial.begin(115200);
+
+  ledcSetup(CHANNEL, FREQUENCY, RESOLUTION);
+  ledcAttachPin(FLASH_PIN, CHANNEL);
+  ledcWrite(CHANNEL, 10); // 0-255
+
+  aes128.setKey(key, 16);
+
+  initializeSDCard();
+
+  connectToWiFi();
+
+  reader.setup();
+
+  // reader.setDebug(true); // Uncomment this line to enable debugging
+  Serial.println("Setup QRCode Reader");
+
+  reader.beginOnCore(0);
+  Serial.println("Begin on Core 0");
+
+  xTaskCreate(onQrCodeTask, "onQrCode", 4 * 1024, NULL, 4, NULL);
+}
+
+void loop()
+{
+  delay(100);
+}
+//////////////////////////////////
+
