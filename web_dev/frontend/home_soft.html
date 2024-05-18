@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Table Example</title>
     <link rel="stylesheet" href="home_soft.css">
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <div class="table-container">
-        <table>
+        <table id="table">
             <thead>
                 <tr>
                     <th>Name</th>
                     <th>ID</th>
+                    <th>Time Attended</th>
                 </tr>
             </thead>
             <tbody id="table-body">
                 <!-- Data will be populated here by JavaScript -->
             </tbody>
         </table>
+        <button onclick="exportTableToExcel('table', 'users')">Export to Excel</button>
     </div>
     <script src="home_soft.js"></script>
+    
 </body>
 </html>

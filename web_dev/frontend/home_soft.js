@@ -16,18 +16,26 @@ function updateTable(data) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = ''; // Clear existing table rows
 
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    console.log(today);
     data.forEach(item => {
-        const row = document.createElement('tr');
-        const nameCell = document.createElement('td');
-        const idCell = document.createElement('td');
+        // Only add the row if the date is today's date
+        if (item.date === today) {
+            const row = document.createElement('tr');
+            const nameCell = document.createElement('td');
+            const idCell = document.createElement('td');
+            const timeAttendedCell = document.createElement('td');
 
-        nameCell.textContent = `${item.first_name} ${item.last_name}`;
-        idCell.textContent = item.user_id;
+            nameCell.textContent = `${item.first_name} ${item.last_name}`;
+            idCell.textContent = item.user_id;
+            timeAttendedCell.textContent = item.timeAttended;
 
-        row.appendChild(nameCell);
-        row.appendChild(idCell);
-        tableBody.appendChild(row);
-    });
+            row.appendChild(nameCell);
+            row.appendChild(idCell);
+            row.appendChild(timeAttendedCell);
+            tableBody.appendChild(row);
+        
+    }});
 }
 
 async function loadData() {
@@ -36,4 +44,14 @@ async function loadData() {
 }
 
 document.addEventListener('DOMContentLoaded', loadData);
-setInterval(loadData, 10000); // Fetch data every 10 seconds
+setInterval(loadData, 20000); // Fetch data every 20 seconds
+
+function exportTableToExcel(tableID, filename = '') {
+    const table = document.getElementById(tableID);
+    const ws = XLSX.utils.table_to_sheet(table);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+
+    // Generate XLSX file and download
+    XLSX.writeFile(wb, `${filename}.xlsx`);
+}
