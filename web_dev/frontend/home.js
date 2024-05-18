@@ -8,6 +8,7 @@ async function fetchData() {
     } catch (error) {
         console.error('Failed to fetch data:', error);
     }
+    return data;
 }
 
 document.addEventListener('DOMContentLoaded', fetchData);
