@@ -26,8 +26,8 @@ function updateTable(data) {
             const idCell = document.createElement('td');
             const timeAttendedCell = document.createElement('td');
 
-            nameCell.textContent = `${item.first_name} ${item.last_name}`;
-            idCell.textContent = item.user_id;
+            nameCell.textContent = item.name;
+            idCell.textContent = item.id;
             timeAttendedCell.textContent = item.timeAttended;
 
             row.appendChild(nameCell);
