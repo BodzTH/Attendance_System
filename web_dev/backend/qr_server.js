@@ -29,7 +29,7 @@ const IP = process.env.IP;
 const TCP_PORT = process.env.PORTTCP;
 
 // Database connections
-const connection1 = mongoose.createConnection(process.env.ATTENDENCE);
+const connection1 = mongoose.createConnection(process.env.ATTENDANCE);
 // const connection2 = mongoose.createConnection(process.env.HARDWAREDB_DB_URI);
 
 // Model imports
