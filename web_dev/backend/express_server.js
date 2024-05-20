@@ -3,7 +3,6 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
-const os = require("os");
 
 app.use(express.json()); // For parsing application/json
 app.use(cors());

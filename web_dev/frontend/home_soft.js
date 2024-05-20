@@ -44,7 +44,7 @@ async function loadData() {
 }
 
 document.addEventListener('DOMContentLoaded', loadData);
-setInterval(loadData, 20000); // Fetch data every 20 seconds
+setInterval(loadData, 1000); // Fetch data every 20 seconds
 
 function exportTableToExcel(tableID, filename = '') {
     const table = document.getElementById(tableID);
