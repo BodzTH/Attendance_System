@@ -33,6 +33,14 @@ const Attendance = connection.model(
   "studentsAttendence"
 );
 
+app.get('/studentattendance', (req, res) => {
+    // Construct the file path relative to the current directory (__dirname)
+    const filePath = path.join(__dirname, '..', 'frontend', 'studentattendance.html');
+    
+    // Send the file as the response
+    res.sendFile(filePath);
+});
+
 app.get("/api/attendance", async (req, res) => {
   try {
     const attendanceList = await Attendance.find();
@@ -41,6 +49,54 @@ app.get("/api/attendance", async (req, res) => {
     console.error("Error occurred while fetching attendance: ", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
+});
+
+app.get('/studentattendance', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' ,'studentattendance.html');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
+});
+
+app.get('/studentattendance.css', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' , 'studentattendance.css');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
+});
+
+app.get('/studentattendance.js', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' , 'studentattendance.js');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
+});
+
+app.get('/student_login', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' , 'student_login.html');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
+});
+
+app.get('/student_login.js', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' , 'student_login.js');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
+});
+
+app.get('/student_login.css', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' , 'student_login.css');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
 });
 
 const port = process.env.PORTEX; // Set the port number
