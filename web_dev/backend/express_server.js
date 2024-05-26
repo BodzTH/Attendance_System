@@ -117,7 +117,7 @@ app.get('/home_soft.js', (req, res) => {
 
 app.get('/home_soft.css', (req, res) => {
   // Construct the file path relative to the current directory (__dirname)
-  const filePath = path.join(__dirname,'..','frontend' , 'home_soft.html.html');
+  const filePath = path.join(__dirname,'..','frontend' , 'home_soft.css');
   
   // Send the file as the response
   res.sendFile(filePath);

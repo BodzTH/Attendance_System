@@ -47,13 +47,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.getElementById('search-date').addEventListener('click', () => {
+    const dateInput = document.getElementById('dateInput').value;
+    if (!dateInput) return; // Ignore the click if the date input is empty
     clearInterval(intervalId);
-    const date = document.getElementById('dateInput').value;
-    const filteredData = allData.filter(item => item.date === date);
+    const filteredData = allData.filter(item => item.date === dateInput);
     updateTable(filteredData);
 });
 
 document.getElementById('reset').addEventListener('click', () => {
+    document.getElementById('dateInput').value = ''; // Clear the date input field
     clearInterval(intervalId);
     loadData();
     intervalId = setInterval(loadData, 1000);
