@@ -10,7 +10,7 @@ const attendenceSchema = new mongoose.Schema({
     required: true,
   },
   id: {
-    type: Number,
+    type: String,
     required: true,
   },
   date: {
@@ -22,6 +22,8 @@ const attendenceSchema = new mongoose.Schema({
     required: true,
   },
 });
+
+attendenceSchema.index({ id: 1, date: 1 }, { unique: true });
 
 const key = CryptoJS.enc.Hex.parse(process.env.KEY);
 const tcpServer = net.createServer();
@@ -42,11 +44,12 @@ const Model1 = connection1.model(
   attendenceSchema,
   "studentsAttendence"
 );
+
 // const Model2 = connection2.model("Model2", devices.schema, "devices");
 
 // TCP Server
 tcpServer.listen(TCP_PORT, IP);
-tcpServer.once("connection", (socket) => {
+tcpServer.on("connection", (socket) => {
   console.log(
     `Accepted connection from ${socket.remoteAddress}:${socket.remotePort}`
   );
@@ -54,17 +57,17 @@ tcpServer.once("connection", (socket) => {
   const rl = readline.createInterface({ input: socket });
 
   rl.on("line", (line) => {
+    // Get the current date and time
+    const now = new Date();
+    const currentDate = now.toISOString().split("T")[0];
+    const currentTime = now.toTimeString().split(" ")[0];
+
     console.log(`Received data: ${line}`);
     hash = line.slice(0, 64);
     cypher = line.slice(64, line.length);
     console.log(`Hash: ${hash}`);
     console.log(`Cypher: ${cypher}`);
     const encryptedData = CryptoJS.enc.Hex.parse(cypher);
-
-    // Get the current date and time
-    const now = new Date();
-    const currentDate = now.toISOString().split("T")[0];
-    const currentTime = now.toTimeString().split(" ")[0];
 
     console.log(`Received date: ${currentDate}`);
     console.log(`Received time: ${currentTime}`);
@@ -83,6 +86,14 @@ tcpServer.once("connection", (socket) => {
         if (v) str += String.fromCharCode(v);
       }
       console.log("Decrypted message:", str);
+
+      const pattern = /^([A-Za-z0-9]+) (.+)$/;
+      if (pattern.test(str)) {
+        console.log("Message is in the correct format");
+      } else {
+        console.log("Message is not in the correct format");
+        return;
+      }
       const hashedMessage = CryptoJS.SHA256(str).toString();
       console.log("Hashed message:", hashedMessage);
 
@@ -117,9 +128,9 @@ tcpServer.once("connection", (socket) => {
           .catch((err) => {
             console.error(`Error saving to database: ${err.message}`);
           });
-
       } else {
         console.log("Hashes do not match!");
+        return;
       }
     } catch (err) {
       console.error(`Decryption error: ${err.message}`);
@@ -132,6 +143,7 @@ tcpServer.once("connection", (socket) => {
 
   socket.on("error", (err) => {
     console.error(`Connection error: ${err}`);
+    return;
   });
 });
 

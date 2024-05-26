@@ -3,9 +3,9 @@
 #include <AES.h>
 #include <SHA256.h>
 #include <WiFi.h>
-#include <ArduinoJson.h>
-#include <SD_MMC.h>
-#include <FS.h>
+// #include <ArduinoJson.h>
+// #include <SD_MMC.h>
+// #include <FS.h>
 
 #ifndef FLASH_LED
 #define FLASH_LED 4
@@ -37,7 +37,7 @@
 #endif
 
 #ifndef SERVER_IP4
-#define SERVER_IP4 8
+#define SERVER_IP4 101
 #endif
 
 #ifndef SERVER_PORT1
@@ -60,7 +60,7 @@ IPAddress serverIP(SERVER_IP1, SERVER_IP2, SERVER_IP3, SERVER_IP4);
 byte key[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
 byte plaintext[128] = {0};
 byte cypher[128] = {0};
-byte decryptedtext[128] = {0};
+// byte decryptedtext[128] = {0};
 byte hash[HASH_LENGTH] = {0};
 
 // Object instances
@@ -96,7 +96,7 @@ void connectToWiFi()
   // Close the file
   // file.close();
 
-  WiFi.begin(, );
+  WiFi.begin("@_@", "Lolz12345");
   int flipper = 1;
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -209,8 +209,8 @@ void onQrCodeTask(void *pvParameters)
 // TCP Message
 void sendPayload(const char *payload)
 {
-  int messageLength = strlen(payload);                 // Get the actual length of the message
-  int paddedLength = ((messageLength + 15) / 16) * 16; // Calculate the padded length
+  int messageLength = strlen(payload);                 
+  int paddedLength = ((messageLength + 15) / 16) * 16; 
   strncpy((char *)plaintext, payload, messageLength);
   for (int i = messageLength; i < paddedLength; i++)
   {
@@ -233,10 +233,10 @@ void sendPayload(const char *payload)
   //   }
   // }
   // Decrypt each block
-  for (int i = 0; i < paddedLength; i += 16)
-  {
-    aes128.decryptBlock(decryptedtext + i, cypher + i);
-  }
+  // for (int i = 0; i < paddedLength; i += 16)
+  // {
+  //   aes128.decryptBlock(decryptedtext + i, cypher + i);
+  // }
 
   // Serial.println();
   // Serial.print("After Decryption:");
@@ -273,7 +273,7 @@ byte *computeHash(const char *message)
 
   sha256.reset();
   sha256.update((byte *)message, strlen(message));
-  sha256.finalize(hash, sizeof(hash));
+  sha256.finalize(hash, HASH_LENGTH);
 
   return hash;
 }
