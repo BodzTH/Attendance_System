@@ -17,8 +17,6 @@
             const logTableBody = document.getElementById('logTableBody');
             logTableBody.innerHTML = ''; // Clear existing table rows
         
-            const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-            console.log(today);
             data.forEach(item => {
                 console.log(item.id);
                 console.log(studentId);
