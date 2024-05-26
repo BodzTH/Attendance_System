@@ -8,6 +8,12 @@
 </head>
 <body>
     <div class="table-container">
+        <div class="controls">
+            <input type="date" id="dateInput" class="date-input">
+            <button class="search-date" id="search-date">Search by Date</button>
+            <button id="reset">Reset</button>
+            <button onclick="exportTableToExcel('table', 'users')">Export to Excel</button>
+        </div>
         <table id="table">
             <thead>
                 <tr>
@@ -20,9 +26,7 @@
                 <!-- Data will be populated here by JavaScript -->
             </tbody>
         </table>
-        <button onclick="exportTableToExcel('table', 'users')">Export to Excel</button>
     </div>
     <script src="home_soft.js"></script>
-    
 </body>
 </html>
