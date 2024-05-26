@@ -1,4 +1,4 @@
-data2=[
+data2 = [
     {
         "_id": "66466720bf539516246bf3b8",
         "id": 222102535,
@@ -49,7 +49,7 @@ data2=[
     },
     {
         "_id": "6647294f18860893711331fb",
-        "date": "2024-05-17",
+        "date": "2024-05-26",
         "id": 221101234,
         "__v": 0,
         "name": "Abdelrahman Ayman Mostafa Mohamed",
@@ -57,13 +57,13 @@ data2=[
     },
     {
         "_id": "664729611886089371133201",
-        "date": "2024-05-24",
+        "date": "2024-05-26",
         "id": 222102535,
         "__v": 0,
         "name": "Karim Mamdouh Ahmed",
         "timeAttended": "12:54:41"
     }
-]
+];
 
 async function fetchData() {
     let data = [];
@@ -83,35 +83,47 @@ function updateTable(data) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = ''; // Clear existing table rows
 
-    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-    console.log(today);
     data.forEach(item => {
-        // Only add the row if the date is today's date
-        if (item.date === today) {
-            const row = document.createElement('tr');
-            const nameCell = document.createElement('td');
-            const idCell = document.createElement('td');
-            const timeAttendedCell = document.createElement('td');
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const idCell = document.createElement('td');
+        const timeAttendedCell = document.createElement('td');
 
-            nameCell.textContent = item.name;
-            idCell.textContent = item.id;
-            timeAttendedCell.textContent = item.timeAttended;
+        nameCell.textContent = item.name;
+        idCell.textContent = item.id;
+        timeAttendedCell.textContent = item.timeAttended;
 
-            row.appendChild(nameCell);
-            row.appendChild(idCell);
-            row.appendChild(timeAttendedCell);
-            tableBody.appendChild(row);
-        
-    }});
+        row.appendChild(nameCell);
+        row.appendChild(idCell);
+        row.appendChild(timeAttendedCell);
+        tableBody.appendChild(row);
+    });
 }
 
 async function loadData() {
-    //const data = await fetchData();
-    updateTable(data2);
+    const data = await fetchData();
+    updateTable(data.filter(item => item.date === new Date().toISOString().split('T')[0]));
 }
 
-document.addEventListener('DOMContentLoaded', loadData);
-setInterval(loadData, 20000); // Fetch data every 20 seconds
+let intervalId;
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadData();
+    intervalId = setInterval(loadData, 1000); // Fetch data every second
+});
+
+document.getElementById('search-date').addEventListener('click', () => {
+    clearInterval(intervalId);
+    const date = document.getElementById('dateInput').value;
+    const filteredData = data2.filter(item => item.date === date);
+    updateTable(filteredData);
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+    clearInterval(intervalId);
+    loadData();
+    intervalId = setInterval(loadData, 1000);
+});
 
 function exportTableToExcel(tableID, filename = '') {
     const table = document.getElementById(tableID);

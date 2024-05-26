@@ -99,6 +99,30 @@ app.get('/student_login.css', (req, res) => {
   res.sendFile(filePath);
 });
 
+app.get('/home_soft', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' , 'home_soft.html');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
+});
+
+app.get('/home_soft.js', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' , 'home_soft.js');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
+});
+
+app.get('/home_soft.css', (req, res) => {
+  // Construct the file path relative to the current directory (__dirname)
+  const filePath = path.join(__dirname,'..','frontend' , 'home_soft.html.html');
+  
+  // Send the file as the response
+  res.sendFile(filePath);
+});
+
 const port = process.env.PORTEX; // Set the port number
 app.listen(port, "localhost", () => {
   console.log(`Server is running on localhost:${port}`);
