@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
-const os = require("os");
+
 app.use(express.json()); // For parsing application/json
 app.use(cors());
 
@@ -13,7 +13,7 @@ const attendenceSchema = new mongoose.Schema({
     required: true,
   },
   id: {
-    type: Number,
+    type: String,
     required: true,
   },
   date: {
