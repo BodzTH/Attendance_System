@@ -1,5 +1,13 @@
 let intervalId;
 let allData = [];
+function getCurrentDate() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+console.log(getCurrentDate());
 
 async function fetchData() {
     let data = [];
@@ -38,7 +46,7 @@ function updateTable(data) {
 
 async function loadData() {
     allData = await fetchData();
-    updateTable(allData.filter(item => item.date === new Date().toISOString().split('T')[0]));
+    updateTable(allData.filter(item => item.date === getCurrentDate()));
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -47,13 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.getElementById('search-date').addEventListener('click', () => {
+    const dateInput = document.getElementById('dateInput').value;
+    if (!dateInput) return; // Ignore the click if the date input is empty
     clearInterval(intervalId);
-    const date = document.getElementById('dateInput').value;
-    const filteredData = allData.filter(item => item.date === date);
+    const filteredData = allData.filter(item => item.date === dateInput);
     updateTable(filteredData);
 });
 
 document.getElementById('reset').addEventListener('click', () => {
+    document.getElementById('dateInput').value = ''; // Clear the date input field
     clearInterval(intervalId);
     loadData();
     intervalId = setInterval(loadData, 1000);
